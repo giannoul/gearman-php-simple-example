@@ -1,0 +1,24 @@
+FROM php:7.3.27-fpm-buster
+
+RUN apt-get update &&\
+    apt-get install -y wget dumb-init &&\
+    wget -O /tmp/jemalloc-4.5.0.tar.bz2 https://github.com/jemalloc/jemalloc/releases/download/4.5.0/jemalloc-4.5.0.tar.bz2 &&\
+    cd /tmp && tar -xjf jemalloc-4.5.0.tar.bz2 && cd jemalloc-4.5.0/ &&\
+    ./configure && make &&\
+    mv lib/libjemalloc.so.2 /usr/lib &&\
+    apt-get purge -y --auto-remove
+
+RUN apt-get install -y gearman-job-server libgearman-dev gearman-tools netcat &&\
+    pecl install -o -f gearman &&  rm -rf /tmp/pear &&  docker-php-ext-enable gearman &&\
+    wget https://github.com/bakins/gearman-exporter/releases/download/v0.5.0/gearman-exporter.linux.amd64 &&\
+    mv gearman-exporter.linux.amd64 /usr/local/bin/gearman-exporter &&\
+    chmod +x /usr/local/bin/gearman-exporter
+
+# for debug
+RUN apt-get install -y procps
+
+COPY . /app
+WORKDIR /app
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "./entrypoint.sh"]

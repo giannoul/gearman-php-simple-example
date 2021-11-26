@@ -1,0 +1,32 @@
+version: '3.6'
+
+networks:
+    gearman-topology: {}
+
+services:
+  gearman-server:
+    container_name: gearman-server
+    image: gearman-pod-experiment
+    entrypoint: gearmand --log-file=stderr --threads=1 #gearmand --log-file=stderr --verbose=DEBUG --threads=1 --coredump
+    networks:
+      - gearman-topology
+    restart:
+      on-failure
+
+  gearman-worker:
+    container_name: gearman-worker
+    image: gearman-pod-experiment
+    entrypoint: php reverse_worker.php 
+    networks:
+      - gearman-topology
+    restart:
+      on-failure  
+      
+  gearman-client:
+    container_name: gearman-client
+    image: gearman-pod-experiment
+    entrypoint: sleep 5800000
+    networks:
+      - gearman-topology
+    restart:
+      on-failure
