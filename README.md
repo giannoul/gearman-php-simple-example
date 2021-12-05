@@ -113,5 +113,6 @@ quit
 As per the following links:
 * https://gist.github.com/juneym/6558745
 * https://github.com/mmoreram/GearmanBundle/issues/134
+* https://dpb587.me/post/2013/01/14/terminating-gearman-workers-in-php/
 
 the graceful shutdown of gearman workers is perceived like "the worker should stop receiving more jobs once it gets a termination signal and exit once the current jobs finish". This is done using the existing code. 
