@@ -4,6 +4,24 @@ networks:
     gearman-topology: {}
 
 services:
+  memcached-1:
+    container_name: memcached-1
+    image: memcached-pod-experiment
+    entrypoint: memcached -p 11211 -m 64 -l 0.0.0.0 -x memcached-2 -X 11212:11213  -u root -vvv
+    networks:
+      - gearman-topology
+    restart:
+      on-failure
+
+  memcached-2:
+    container_name: memcached-2
+    image: memcached-pod-experiment
+    entrypoint: memcached -p 11211 -m 64 -l 0.0.0.0 -x memcached-1 -X 11213:11212 -u root -vvv
+    networks:
+      - gearman-topology
+    restart:
+      on-failure
+    
   gearman-server:
     container_name: gearman-server
     image: gearman-pod-experiment
@@ -16,11 +34,11 @@ services:
   gearman-worker:
     container_name: gearman-worker
     image: gearman-pod-experiment
-    entrypoint: php reverse_worker.php 
+    entrypoint: /usr/bin/dumb-init -- ./entrypoint-worker.sh
     networks:
       - gearman-topology
     restart:
-      on-failure  
+      always 
       
   gearman-client:
     container_name: gearman-client

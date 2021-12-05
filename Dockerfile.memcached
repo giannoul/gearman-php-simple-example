@@ -1,0 +1,19 @@
+FROM debian:jessie-slim
+
+RUN apt-get update && apt-get install -y git gcc make wget libtool autotools-dev automake python
+RUN wget https://github.com/libevent/libevent/archive/refs/tags/release-1.4.15-stable.tar.gz &&\
+    tar -xvf release-1.4.15-stable.tar.gz &&\
+    cd  libevent-release-1.4.15-stable/ &&\
+    ./autogen.sh &&\
+    ./configure &&\
+    make &&\
+    make install 
+
+WORKDIR /tmp
+RUN git clone https://github.com/yokogawa-k/repcached.git &&\
+    cd repcached &&\
+    ./configure --enable-64bit --enable-replication &&\
+    make &&\
+    make install
+
+RUN apt-get install -y memcached
