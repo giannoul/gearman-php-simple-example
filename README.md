@@ -43,6 +43,12 @@ Resources:
 * http://tutorialspots.com/how-to-use-memcached-with-replication-on-centos-4783.html
 * https://www.slideshare.net/gear6memcached/implementing-high-availability-services-for-memcached-1911077
 
+It will add the following extra options to memcached:
+```
+-x <ip_addr>  hostname or IP address of peer repcached
+-X <num:num>  TCP port number for replication. <listen:connect> (default: 11212)
+```
+
 #### Tests
 * we can store keys on both instances 
 
